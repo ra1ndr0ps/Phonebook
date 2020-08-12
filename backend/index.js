@@ -19,7 +19,6 @@ app.use(morgan(function (tokens, req, res) {
 }))
 
 app.use(cors())
-app.use(express.static('build'))
 
 const Person = require('./models/person')
 
