@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const url = process.env.MONGODB_URI
+const url = "mongodb+srv://rain:learnreact@cluster0.xmpu9.mongodb.net/phonebook-app?retryWrites=true&w=majority"
 
 console.log('connecting to', url)
 
