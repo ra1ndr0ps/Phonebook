@@ -54,30 +54,17 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-    if (persons.map(p => p.name).includes(newName)) {
-      if (window.confirm(`Change ${newName}?'s number?`)) {
-        const p = persons.find(p => p.name === newName)
-        p.number = newNumber
-        personService
-          .update(p.id, p)
-          .then(response => {
-            setPersons(persons)
-          })
-      }
-    }
-    else {
-      personService
-        .create(nameObject)
-        .then(response => {
-          setPersons(persons.concat(response.data))
-          setErrorMessage(
-            {text: `Added '${newName}'`, color: 'green'}
-          )
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 5000)
-        })
-    }
+    personService
+      .create(nameObject)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setErrorMessage(
+          {text: `Added '${newName}'`, color: 'green'}
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
     setNewName('')
     setNewNumber('')
   }
