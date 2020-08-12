@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
@@ -20,18 +21,7 @@ app.use(morgan(function (tokens, req, res) {
 app.use(cors())
 app.use(express.static('build'))
 
-let persons = [
-      {
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122",
-        "id": 4
-      },
-      {
-        "name": "Yo",
-        "number": "2",
-        "id": 5
-      }
-]
+const Person = require('./models/person')
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
@@ -46,20 +36,24 @@ app.get('/info', (req, res) => {
         )
   })
 
-app.get('/api/persons', (req, res) => {
-  res.json(persons)
+app.get('/api/persons', (request, response) => {
+  Person.find({}).then(person => {
+    response.json(person)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(p => p.id === id)
-  response.json(person)
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(p => p.id !== id)
-  response.status(204).end()
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 function getRandomInt(min, max) {
@@ -83,21 +77,18 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (persons.map(p => p.name).includes(body.name)) {
-    return response.status(400).json({ 
-      error: 'name must be unique' 
-    })
-  }
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+    id: getRandomInt(0, 10**6)
+  })
 
-  const person = request.body
-  person.id = getRandomInt(0, 10**6)
-
-  persons = persons.concat(person)
-
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
