@@ -1,6 +1,8 @@
+## Description
+
 A self-educational full-stack app using React.js.
 
-Techlonogies used:
+### Techlonogies used:
 <ul>
     <li>React.js</li>
     <li>Node.js</li>
