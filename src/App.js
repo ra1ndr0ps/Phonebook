@@ -12,6 +12,7 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ personFilter, setPersonFilter ] = useState('')
   const [ countries, setCountries ] = useState([])
+  const [ filteredCountries, setFilteredCountries ] = useState([])
   const [ country, setCountry ] = useState('')
   const [ errorMessage, setErrorMessage ] = useState(null)
 
@@ -37,6 +38,7 @@ const App = () => {
   }
 
   const handleCountryChange = (event) => {
+   setFilteredCountries(countries.filter(c => c.name.toLowerCase().includes(country.toLowerCase())))
    setCountry(event.target.value)
  }
 
@@ -54,7 +56,31 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-    personService
+    if (persons.map(p => p.name).includes(newName)) {
+      const id = persons.find(p => p.name === newName).id
+      personService
+      .update(id, nameObject)
+      .then(response => {
+        setPersons(persons.map(p => p.name !== newName ? p : response.data))
+        setErrorMessage(
+          {text: `Changed '${newName}' number`, color: 'green'}
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+      .catch(error => {
+        // this is the way to access the error message
+        setErrorMessage(
+          {text: error.response.data.error, color: 'red'}
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+    }
+    else {
+      personService
       .create(nameObject)
       .then(response => {
         setPersons(persons.concat(response.data))
@@ -65,6 +91,16 @@ const App = () => {
           setErrorMessage(null)
         }, 5000)
       })
+      .catch(error => {
+        // this is the way to access the error message
+        setErrorMessage(
+          {text: error.response.data.error, color: 'red'}
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+    }
     setNewName('')
     setNewNumber('')
   }
@@ -93,10 +129,9 @@ const App = () => {
 
   
   const showCountry = (country) => {
-   setCountry(country)
+    setFilteredCountries(countries.filter(c => c.name.toLowerCase() === country.toLowerCase()))
  } 
 
-  const filteredCountries = countries.filter(c => c.name.toLowerCase().includes(country.toLowerCase()))
   const personsToShow = persons.filter(p => p.name.includes(personFilter))
 
   return (
