@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV !== 'production') {
-   require('dotenv').config() 
+   require('dotenv').config()
 }
 const express = require('express')
 const app = express()
@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-  let number 
+  let number
   Person.countDocuments({}, (err, count) => number = count).then(() => {
       res.send(
         `
@@ -74,14 +74,14 @@ app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name) {
-    return response.status(400).json({ 
-      error: 'name  missing' 
+    return response.status(400).json({
+      error: 'name  missing'
     })
   }
 
   if (!body.number) {
-    return response.status(400).json({ 
-      error: 'number missing' 
+    return response.status(400).json({
+      error: 'number missing'
     })
   }
 
@@ -105,7 +105,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true, context: 'query'})
+  Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => {
       response.json(updatedPerson.toJSON())
     })
